@@ -1,21 +1,36 @@
-import React, { useRef, useCallback, useContext } from 'react';
-import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
+import React, { useCallback, useRef } from 'react';
+import {
+  Image,
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+  Alert,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
+import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
-import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/auth';
-import { useToast } from '../../hooks/toast';
 
 import getValidationErrors from '../../utils/getValidationErrors';
-
-import logoImg from '../../assets/logo.svg';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-import { Container, Content, AnimationContainer, Background } from './styles';
+import logoImg from '../../assets/logo.png';
+
+import {
+  Container,
+  Title,
+  ForgotPassword,
+  ForgotPasswordText,
+  CreateAccountButton,
+  CreateAccountButtonText,
+} from './styles';
 
 interface SignInFormData {
   email: string;
@@ -24,13 +39,15 @@ interface SignInFormData {
 
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-  const { user, signIn } = useAuth();
-  const { addToast } = useToast();
+  const passwordInputRef = useRef<TextInput>(null);
+  const navigation = useNavigation();
 
-  const handleSubmit = useCallback(
+  const { signIn } = useAuth();
+
+  const handleSignIn = useCallback(
     async (data: SignInFormData) => {
       try {
-        formRef.current?.setErrors({});
+        formRef.current?.setErros({});
         const schema = Yup.object().shape({
           email: Yup.string()
             .required('E-mail obrigatorio')
@@ -51,45 +68,83 @@ const SignIn: React.FC = () => {
           return;
         }
 
-        // disparar um  toast
-        addToast({
-          type: 'error',
-          title: 'Erro na autenticação',
-          description: 'Ocorreu um erro ao fazer login, cheque as credenciais.',
-        });
+        Alert.alert(
+          'Erro na autenticação',
+          'Ocorreu um erro ao fazer login, cheque as credenciais.',
+        );
       }
     },
-    [signIn, addToast],
+    [signIn],
   );
 
   return (
-    <Container>
-      <Content>
-        <AnimationContainer>
-          <img src={logoImg} alt="GoBarber" />
+    <>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        enabled
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flex: 1 }}
+        >
+          <Container>
+            <Image source={logoImg} />
+            <View>
+              <Title>Faça seu logon</Title>
+            </View>
 
-          <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Faça seu logon</h1>
-            <Input name="email" icon={FiMail} placeholder="E-mail" />
-            <Input
-              name="password"
-              icon={FiLock}
-              type="password"
-              placeholder="Senha"
-            />
+            <Form ref={formRef} onSubmit={handleSignIn}>
+              <Input
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                name="email"
+                icon="mail"
+                placeholder="E-mail"
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  passwordInputRef.current?.focus();
+                }}
+              />
+              <Input
+                ref={passwordInputRef}
+                name="password"
+                icon="lock"
+                placeholder="Senha"
+                secureTextEntry
+                returnKeyType="send"
+                onSubmitEditing={() => {
+                  formRef.current?.submitForm();
+                }}
+              />
 
-            <Button type="submit">Entrar</Button>
+              <Button
+                onPress={() => {
+                  formRef.current?.submitForm();
+                }}
+              >
+                Entrar
+              </Button>
+            </Form>
 
-            <Link to="forgot">Esqueci minha senha</Link>
-          </Form>
-          <Link to="/signup">
-            <FiLogIn />
-            Criar conta
-          </Link>
-        </AnimationContainer>
-      </Content>
-      <Background />
-    </Container>
+            <ForgotPassword
+              onPress={() => {
+                console.log('funfou');
+              }}
+            >
+              <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
+            </ForgotPassword>
+          </Container>
+        </ScrollView>
+
+        <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
+          <Icon name="log-in" size={20} color="#ff9000" />
+          <CreateAccountButtonText>Criar uma conta</CreateAccountButtonText>
+        </CreateAccountButton>
+      </KeyboardAvoidingView>
+    </>
   );
 };
+
 export default SignIn;

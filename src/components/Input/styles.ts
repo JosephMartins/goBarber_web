@@ -1,28 +1,23 @@
-import styled, { css } from 'styled-components';
-
-import Tooltip from '../Tooltip';
+import styled, { css } from 'styled-components/native';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 interface ContainerProps {
   isFocused: boolean;
-  isFilled: boolean;
   isErrored: boolean;
 }
 
-export const Container = styled.div<ContainerProps>`
+export const Container = styled.View<ContainerProps>`
+  width: 100%;
+  height: 60px;
   background: #232129;
   border-radius: 10px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+  border-width: 2px;
+  border-color: #233129;
 
-  border: 2px solid #232129;
-  padding: 16px;
-  width: 100%;
-
-  display: flex;
+  flex-direction: row;
   align-items: center;
-  color: #666360;
-
-  & + div {
-    margin-top: 8px;
-  }
 
   ${props =>
     props.isErrored &&
@@ -33,45 +28,17 @@ export const Container = styled.div<ContainerProps>`
   ${props =>
     props.isFocused &&
     css`
-      color: #ff9000;
       border-color: #ff9000;
     `}
-
-  ${props =>
-    props.isFilled &&
-    css`
-      color: #ff9000;
-    `}
-
-
-
-  input {
-    flex: 1;
-    background: transparent;
-    border: 0;
-    color: #f4ede8;
-
-    &::placeholder {
-      color: #666360;
-    }
-  }
-  svg {
-    margin-right: 16px;
-  }
 `;
 
-export const Error = styled(Tooltip)`
-  height: 20px;
-  margin-left: 16px;
-  svg {
-    margin: 0;
-  }
-  span {
-    background: #c53030;
-    color: #fff;
+export const TextInput = styled.TextInput`
+  flex: 1;
+  color: #fff;
+  font-size: 16px;
+  font-family: 'RobotoSlab-Regular';
+`;
 
-    &::before {
-      border-color: #c53030 transparent;
-    }
-  }
+export const Icon = styled(FeatherIcon)`
+  margin-right: 16px;
 `;

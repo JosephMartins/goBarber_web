@@ -1,19 +1,22 @@
 import React from 'react';
-import { Switch } from 'react-router-dom';
+import { ActivityIndicator, View } from 'react-native';
 
-import Route from './Route';
+import AuthRoutes from './auth.routes';
+import AppRoutes from './app.routes';
+import { useAuth } from '../hooks/auth';
 
-import SignIn from '../pages/SignIn';
-import SignUp from '../pages/SignUp';
+const Routes: React.FC = () => {
+  const { user, loading } = useAuth();
 
-import Dashboard from '../pages/Dashboard';
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#999" />
+      </View>
+    );
+  }
 
-const Routes: React.FC = () => (
-  <Switch>
-    <Route path="/" exact component={SignIn} />
-    <Route path="/signup" exact component={SignUp} />
-    <Route path="/dashboard" exact component={Dashboard} isPrivate />
-  </Switch>
-);
+  return user ? <AppRoutes /> : <AuthRoutes />;
+};
 
 export default Routes;

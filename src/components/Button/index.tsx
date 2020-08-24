@@ -1,13 +1,15 @@
-import React, { ButtonHTMLAttributes } from 'react';
+import React from 'react';
+import { RectButtonProperties } from 'react-native-gesture-handler';
 
-import { Container } from './styles';
+import { Container, ButtonText } from './styles';
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+interface ButtonProps extends RectButtonProperties {
+  children: string;
+}
 
 const Button: React.FC<ButtonProps> = ({ children, ...rest }) => (
-  <Container type="button" {...rest}>
-    {children}
+  <Container {...rest}>
+    <ButtonText>{children}</ButtonText>
   </Container>
 );
-
 export default Button;
